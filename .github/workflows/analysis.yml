@@ -22,16 +22,9 @@ jobs:
       - run: cargo install clippy-sarif
         name: Install clippy-sarif 🛎️
       - run:
-          cargo clippy --all-targets --message-format=json | clippy-sarif > results.sarif
+          cargo clippy --all-features --all-targets --message-format=json | clippy-sarif > results.sarif
         name: Run Clippy Lints 🔨
-      - run:
-          cargo clippy --all-features --all-targets --message-format=json | clippy-sarif > results_webhook.sarif
-        name: Run Clippy Lints (webhook) 🔨
       - uses: github/codeql-action/upload-sarif@v1
         name: Upload SARIF file 🚀
         with:
           sarif_file: results.sarif
-      - uses: github/codeql-action/upload-sarif@v1
-        name: Upload SARIF file 🚀
-        with:
-          sarif_file: results_webhook.sarif
