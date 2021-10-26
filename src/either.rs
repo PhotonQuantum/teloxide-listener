@@ -1,5 +1,5 @@
-use std::any::{Any, TypeId};
-use std::mem::{forget, transmute, transmute_copy};
+use std::any::TypeId;
+use std::mem::{forget, transmute_copy};
 use std::pin::Pin;
 use std::time::Duration;
 
@@ -22,13 +22,6 @@ macro_rules! either {
     };
 }
 
-fn assert_transmute<T: 'static, U: 'static>(t: T) -> U {
-    assert_eq!(TypeId::of::<T>(), TypeId::of::<U>(), "type mismatch");
-    let u = unsafe { transmute_copy(&t) };
-    forget(t);
-    u
-}
-
 impl<'a, L, R, E, SL, SR> AsUpdateStream<'a, E> for Either<L, R>
 where
     L: AsUpdateStream<'a, E, Stream = SL>,
@@ -40,11 +33,9 @@ where
     type Stream = Pin<Box<dyn Stream<Item = Result<Update, E>> + 'a>>;
 
     fn as_stream(&'a mut self) -> Self::Stream {
-        unsafe {
-            match self {
-                Either::Left(inner) => Box::pin(inner.as_stream()),
-                Either::Right(inner) => Box::pin(inner.as_stream()),
-            }
+        match self {
+            Either::Left(inner) => Box::pin(inner.as_stream()),
+            Either::Right(inner) => Box::pin(inner.as_stream()),
         }
     }
 }
@@ -60,9 +51,15 @@ where
     type StopToken = StL;
 
     fn stop_token(&mut self) -> Self::StopToken {
+        assert_eq!(TypeId::of::<StL>(), TypeId::of::<StR>(), "type mismatch");
         match self {
             Either::Left(inner) => inner.stop_token(),
-            Either::Right(inner) => assert_transmute(inner.stop_token()),
+            Either::Right(inner) => unsafe {
+                let t = inner.stop_token();
+                let u = transmute_copy(&t);
+                forget(t);
+                u
+            },
         }
     }
 
