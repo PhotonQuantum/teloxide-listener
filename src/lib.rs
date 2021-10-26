@@ -1,6 +1,5 @@
 use std::env;
 
-use teloxide::dispatching::stop_token::AsyncStopToken;
 use teloxide::dispatching::update_listeners;
 use teloxide::dispatching::update_listeners::UpdateListener;
 use teloxide::prelude::*;
@@ -13,6 +12,8 @@ use crate::either::Either;
 mod either;
 #[cfg(feature = "webhook")]
 pub mod webhook;
+#[cfg(test)]
+mod tests;
 
 pub enum Listener {
     Polling,
@@ -50,8 +51,8 @@ impl Listener {
         self,
         bot: R,
     ) -> Either<
-        impl UpdateListener<R::Err, StopToken = AsyncStopToken>,
-        impl UpdateListener<R::Err, StopToken = AsyncStopToken>,
+        impl UpdateListener<R::Err>,
+        impl UpdateListener<R::Err>,
     >
     where
         R: Requester<Err = RequestError> + 'static,
