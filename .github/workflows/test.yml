@@ -1,0 +1,39 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+name: Test
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout 🛎️
+      - uses: actions-rs/toolchain@v1
+        name: Setup Cargo Toolchain 🛎️
+        with:
+          components: rustfmt, clippy
+          toolchain: stable
+          default: true
+      - uses: Swatinem/rust-cache@v1
+      - uses: actions-rs/cargo@v1
+        name: Check Code Format 🔧
+        with:
+          command: fmt
+          args: -- --check
+      - uses: actions-rs/cargo@v1
+        name: Run Clippy Lints 🔨
+        with:
+          command: clippy
+          args: --all-targets
+      - uses: actions-rs/cargo@v1
+        name: Run Clippy Lints (webhook) 🔨
+        with:
+          command: clippy
+          args: --all-targets --all-features

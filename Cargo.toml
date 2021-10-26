@@ -1,0 +1,16 @@
+[package]
+name = "teloxide-listener"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+webhook = ["axum", "tokio", "tokio-stream", "url", "serde_json", "futures-core"]
+
+[dependencies]
+axum = { version = "0.2", optional = true }
+futures-core = { version = "0.3", optional = true }
+serde_json = { version = "1.0", optional = true }
+teloxide = "0.5"
+tokio = { version = "1.12", optional = true }
+tokio-stream = { version = "0.1", optional = true }
+url = { version = "2.2", optional = true }
