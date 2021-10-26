@@ -10,10 +10,10 @@ use crate::either::Either;
 
 #[cfg(feature = "webhook")]
 mod either;
-#[cfg(feature = "webhook")]
-pub mod webhook;
 #[cfg(test)]
 mod tests;
+#[cfg(feature = "webhook")]
+pub mod webhook;
 
 pub enum Listener {
     Polling,
@@ -50,10 +50,7 @@ impl Listener {
     pub async fn build<R>(
         self,
         bot: R,
-    ) -> Either<
-        impl UpdateListener<R::Err>,
-        impl UpdateListener<R::Err>,
-    >
+    ) -> Either<impl UpdateListener<R::Err>, impl UpdateListener<R::Err>>
     where
         R: Requester<Err = RequestError> + 'static,
         <R as Requester>::GetUpdatesFaultTolerant: Send,
