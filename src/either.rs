@@ -1,5 +1,5 @@
 use std::any::{Any, TypeId};
-use std::mem::{transmute, transmute_copy};
+use std::mem::{forget, transmute, transmute_copy};
 use std::pin::Pin;
 use std::time::Duration;
 
@@ -24,7 +24,9 @@ macro_rules! either {
 
 fn assert_transmute<T: 'static, U: 'static>(t: T) -> U {
     assert_eq!(TypeId::of::<T>(), TypeId::of::<U>(), "type mismatch");
-    unsafe { transmute_copy(&t) }
+    let u = unsafe { transmute_copy(&t) };
+    forget(t);
+    u
 }
 
 impl<'a, L, R, E, SL, SR> AsUpdateStream<'a, E> for Either<L, R>
