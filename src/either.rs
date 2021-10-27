@@ -35,15 +35,15 @@ where
     }
 }
 
-impl<L, R, E, StL, StR> UpdateListener<E> for Either<L, R>
+impl<'s, L, R, E, StL, StR> UpdateListener<E> for Either<L, R>
 where
     L: UpdateListener<E, StopToken = StL>,
     R: UpdateListener<E, StopToken = StR>,
-    StL: StopToken,
-    StR: StopToken,
+    StL: 's + StopToken,
+    StR: 's + StopToken,
     Self: for<'a> AsUpdateStream<'a, E>,
 {
-    type StopToken = Box<dyn StopToken>;
+    type StopToken = Box<dyn StopToken + 's>;
 
     fn stop_token(&mut self) -> Self::StopToken {
         either!(self, ref mut inner => Box::new(inner.stop_token()))
