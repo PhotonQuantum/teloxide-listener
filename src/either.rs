@@ -1,5 +1,3 @@
-use std::any::TypeId;
-use std::mem::{forget, transmute_copy};
 use std::pin::Pin;
 use std::time::Duration;
 
@@ -33,10 +31,7 @@ where
     type Stream = Pin<Box<dyn Stream<Item = Result<Update, E>> + 'a>>;
 
     fn as_stream(&'a mut self) -> Self::Stream {
-        match self {
-            Either::Left(inner) => Box::pin(inner.as_stream()),
-            Either::Right(inner) => Box::pin(inner.as_stream()),
-        }
+        either!(self, ref mut inner => Box::pin(inner.as_stream()))
     }
 }
 
@@ -44,23 +39,14 @@ impl<L, R, E, StL, StR> UpdateListener<E> for Either<L, R>
 where
     L: UpdateListener<E, StopToken = StL>,
     R: UpdateListener<E, StopToken = StR>,
-    StL: 'static + StopToken,
-    StR: 'static + StopToken,
+    StL: StopToken,
+    StR: StopToken,
     Self: for<'a> AsUpdateStream<'a, E>,
 {
-    type StopToken = StL;
+    type StopToken = Box<dyn StopToken>;
 
     fn stop_token(&mut self) -> Self::StopToken {
-        assert_eq!(TypeId::of::<StL>(), TypeId::of::<StR>(), "type mismatch");
-        match self {
-            Either::Left(inner) => inner.stop_token(),
-            Either::Right(inner) => unsafe {
-                let t = inner.stop_token();
-                let u = transmute_copy(&t);
-                forget(t);
-                u
-            },
-        }
+        either!(self, ref mut inner => Box::new(inner.stop_token()))
     }
 
     fn hint_allowed_updates(&mut self, hint: &mut dyn Iterator<Item = AllowedUpdate>) {
