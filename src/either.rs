@@ -33,10 +33,7 @@ where
     type Stream = Pin<Box<dyn Stream<Item = Result<Update, E>> + 'a>>;
 
     fn as_stream(&'a mut self) -> Self::Stream {
-        match self {
-            Either::Left(inner) => Box::pin(inner.as_stream()),
-            Either::Right(inner) => Box::pin(inner.as_stream()),
-        }
+        either!(self, ref mut inner => Box::pin(inner.as_stream()))
     }
 }
 
