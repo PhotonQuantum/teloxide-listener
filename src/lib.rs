@@ -56,8 +56,8 @@ impl Listener {
         <R as Requester>::GetUpdatesFaultTolerant: Send,
     {
         match self {
-            Listener::Polling => Either::Left(update_listeners::polling_default(bot).await),
-            Listener::Webhook(config) => Either::Right(webhook::listener(bot, config).await),
+            Listener::Polling => Either::new_left(update_listeners::polling_default(bot).await),
+            Listener::Webhook(config) => Either::new_right(webhook::listener(bot, config).await),
         }
     }
 
