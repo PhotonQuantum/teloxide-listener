@@ -1,5 +1,3 @@
-use std::any::TypeId;
-use std::mem::{forget, transmute_copy};
 use std::pin::Pin;
 use std::time::Duration;
 
@@ -7,6 +5,8 @@ use futures_core::Stream;
 use teloxide::dispatching::stop_token::StopToken;
 use teloxide::dispatching::update_listeners::{AsUpdateStream, UpdateListener};
 use teloxide::types::{AllowedUpdate, Update};
+
+mod cast;
 
 pub enum Either<L, R> {
     Left(L),
@@ -48,15 +48,9 @@ where
     type StopToken = StL;
 
     fn stop_token(&mut self) -> Self::StopToken {
-        assert_eq!(TypeId::of::<StL>(), TypeId::of::<StR>(), "type mismatch");
         match self {
             Either::Left(inner) => inner.stop_token(),
-            Either::Right(inner) => unsafe {
-                let t = inner.stop_token();
-                let u = transmute_copy(&t);
-                forget(t);
-                u
-            },
+            Either::Right(inner) => cast::assert_transmute(inner.stop_token()),
         }
     }
 

@@ -5,15 +5,16 @@ use teloxide::dispatching::update_listeners::UpdateListener;
 use teloxide::prelude::*;
 use teloxide::RequestError;
 
-#[cfg(feature = "webhook")]
-use crate::either::Either;
+#[cfg(feature = "either")]
+pub use crate::either::Either;
 
-#[cfg(feature = "webhook")]
+#[cfg(feature = "either")]
 mod either;
+#[cfg(feature = "webhook")]
+mod webhook;
+
 #[cfg(test)]
 mod tests;
-#[cfg(feature = "webhook")]
-pub mod webhook;
 
 pub enum Listener {
     Polling,

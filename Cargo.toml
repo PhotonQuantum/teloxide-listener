@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-webhook = ["axum", "tokio", "tokio-stream", "url", "serde_json", "futures-core"]
+webhook = ["axum", "tokio", "tokio-stream", "url", "serde_json", "either"]
+either = ["futures-core"]
 
 [dependencies]
 axum = { version = "0.2", optional = true }
