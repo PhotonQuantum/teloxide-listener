@@ -1,11 +1,11 @@
 use std::mem::MaybeUninit;
-
 use teloxide::prelude::*;
 
 use crate::Listener;
 
+#[test]
 #[cfg(feature = "webhook")]
-async fn must_update_listener() {
+fn must_update_listener() {
     let listener: MaybeUninit<Listener> = MaybeUninit::uninit();
     let listener = unsafe { listener.assume_init() };
 
@@ -13,5 +13,9 @@ async fn must_update_listener() {
     let mut dispatcher = teloxide::dispatching::Dispatcher::new(bot.clone());
     let err_handler = LoggingErrorHandler::with_custom_text("An error from the update listener");
 
-    dispatcher.dispatch_with_listener(listener.build(bot).await, err_handler);
+    drop(async {
+        dispatcher
+            .dispatch_with_listener(listener.build(bot).await, err_handler)
+            .await
+    });
 }
