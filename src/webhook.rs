@@ -1,8 +1,8 @@
 use std::net::SocketAddr;
 use std::str::FromStr;
 
-use axum::handler::{get, post};
 use axum::http::StatusCode;
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use serde_json::Value;
 use teloxide::dispatching::stop_token::AsyncStopToken;
