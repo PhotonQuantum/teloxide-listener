@@ -1,11 +1,11 @@
-use teloxide::prelude::*;
-
-use crate::webhook::HTTPConfig;
-use crate::Listener;
-
 #[test]
 #[cfg(feature = "webhook")]
 fn must_update_listener() {
+    use teloxide::prelude::*;
+
+    use crate::webhook::HTTPConfig;
+    use crate::Listener;
+
     let listener = Listener::Webhook(HTTPConfig::new("http://example.com", "", "0.0.0.0:8080"));
 
     let bot = Bot::new("");
