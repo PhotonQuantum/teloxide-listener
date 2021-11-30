@@ -1,14 +1,12 @@
-use std::mem::MaybeUninit;
-
 use teloxide::prelude::*;
 
+use crate::webhook::HTTPConfig;
 use crate::Listener;
 
 #[test]
 #[cfg(feature = "webhook")]
 fn must_update_listener() {
-    let listener: MaybeUninit<Listener> = MaybeUninit::uninit();
-    let listener = unsafe { listener.assume_init() };
+    let listener = Listener::Webhook(HTTPConfig::new("http://example.com", "", "0.0.0.0:8080"));
 
     let bot = Bot::new("");
     let mut dispatcher = teloxide::dispatching::Dispatcher::new(bot.clone());
