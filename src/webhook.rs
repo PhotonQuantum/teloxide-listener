@@ -68,7 +68,7 @@ where
 
     let app = Router::new()
         .route(
-            config.path.as_str(),
+            format!("/{}", config.path.trim_start_matches('/')).as_str(),
             post(move |Json(payload): Json<Value>| async move {
                 tx.send(Update::try_parse(&payload).map_err(RequestError::InvalidJson))
                     .expect("unable to send update to dispatcher");
