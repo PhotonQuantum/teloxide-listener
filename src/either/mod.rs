@@ -26,11 +26,11 @@ impl<'a, L, R, E, SL, SR> AsUpdateStream<'a, E> for Either<L, R>
 where
     L: AsUpdateStream<'a, E, Stream = SL>,
     R: AsUpdateStream<'a, E, Stream = SR>,
-    SL: 'a + Stream<Item = Result<Update, E>>,
-    SR: 'a + Stream<Item = Result<Update, E>>,
+    SL: 'a + Stream<Item = Result<Update, E>> + Send,
+    SR: 'a + Stream<Item = Result<Update, E>> + Send,
     E: 'a,
 {
-    type Stream = Pin<Box<dyn Stream<Item = Result<Update, E>> + 'a>>;
+    type Stream = Pin<Box<dyn Stream<Item = Result<Update, E>> + Send + 'a>>;
 
     fn as_stream(&'a mut self) -> Self::Stream {
         either!(self, ref mut inner => Box::pin(inner.as_stream()))

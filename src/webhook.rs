@@ -69,9 +69,11 @@ where
     let app = Router::new()
         .route(
             format!("/{}", config.path.trim_start_matches('/')).as_str(),
-            post(move |Json(payload): Json<Value>| async move {
-                tx.send(Update::try_parse(&payload).map_err(RequestError::InvalidJson))
-                    .expect("unable to send update to dispatcher");
+            post(move |Json(payload): Json<Update>| async move {
+                tx.send(Ok(payload))
+                    .expect("Cannot send an incoming update from the webhook");
+
+                StatusCode::OK
             }),
         )
         .route("/health-check", get(|| async { StatusCode::OK }));
