@@ -73,10 +73,13 @@ where
                 StatusCode::OK
             }),
         )
-        .route("/health-check", get(|| async {
-            tracing::debug!("Received health check request");
-            StatusCode::OK
-        }));
+        .route(
+            "/health-check",
+            get(|| async {
+                tracing::debug!("Received health check request");
+                StatusCode::OK
+            }),
+        );
 
     let (stop_tx, stop_rx) = AsyncStopToken::new_pair();
 
