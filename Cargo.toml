@@ -2,6 +2,18 @@
 name = "teloxide-listener"
 version = "0.1.0-beta.1"
 edition = "2021"
+authors = ["LightQuantum <self@lightquantum.me>"]
+description = "A listener extension for teloxide"
+repository = "https://github.com/PhotonQuantum/teloxide-listener"
+readme = "README.md"
+license = "MIT"
+keywords = ["teloxide", "telegram", "bot"]
+exclude = [
+    ".github/*",
+    ".mergify.yml",
+    "bacon.toml",
+    "rust-toolchain.toml",
+]
 
 [features]
 webhook = ["axum", "tokio", "tokio-stream", "url", "serde_json", "either"]
