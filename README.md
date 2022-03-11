@@ -4,11 +4,30 @@ A listener extension for [teloxide](https://github.com/teloxide/teloxide).
 
 Currently supports the following modes:
 - `polling`
-- `webhook` (need to be enabled by feature flag)
+- `webhook` (axum, need to be enabled by feature flag)
 
 ## Usage
 
-Enable the feature flag `webhook` in your `Cargo.toml`, and ensure that `TELOXIDE_WEBHOOK_URL`, `TELOXIDE_WEBHOOK_PATH`, and `TELOXIDE_BIND_ADDR` environment variables are set.
+Construct a `Listener` builder, build it, and pass it to `with_listener` versions of teloxide functions (e.g., [`repl_with_listener`](teloxide::dispatching2::repls::repl_with_listener)).
+
+There are two ways to construct a `Listener` builder.
+
+### From environment variables
+
+[`Listener::from_env`](Listener::from_env) can be used to construct a `Listener` from environment variables.
+
+If compiled with `webhook` feature enabled, it tries to read `TELOXIDE_WEBHOOK_URL`, `TELOXIDE_WEBHOOK_PATH`, and `TELOXIDE_BIND_ADDR` to build a webhook updates listener first.
+
+Otherwise, it falls back to long polling updates listener.
+
+To customize the `TELOXIDE_` prefix, use [`Listener::from_env_with_prefix`](Listener::from_env_with_prefix).
+
+### Constructing a `Listener` manually
+
+- [`Listener::Polling`](Listener::Polling) - a long polling updates listener.
+- [`Listener::Webhook`](Listener::Webhook) - a webhook updates listener.
+
+## Example
 
 ```rust
 use teloxide_listener::Listener;

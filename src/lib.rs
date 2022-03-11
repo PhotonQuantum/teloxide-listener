@@ -6,7 +6,7 @@
 //!
 //! ## Usage
 //!
-//! Construct a `Listener` builder, build it, and pass it to `with_listener` versions of teloxide functions (e.g., [`repl_with_listener`](teloxide::repls2::repl_with_listener)).
+//! Construct a `Listener` builder, build it, and pass it to `with_listener` versions of teloxide functions (e.g., [`repl_with_listener`](teloxide::dispatching2::repls::repl_with_listener)).
 //!
 //! There are two ways to construct a `Listener` builder.
 //!
