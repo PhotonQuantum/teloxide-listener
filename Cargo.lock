@@ -218,6 +218,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "dptree"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "16b8b3726948013829e2d4889a52f2fd84337121a8bffd96af1f7e04aade82af"
+dependencies = [
+ "futures",
+]
+
+[[package]]
 name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -979,6 +988,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "derive_more",
+ "dptree",
  "flurry",
  "futures",
  "log",
@@ -1035,6 +1045,7 @@ dependencies = [
  "teloxide",
  "tokio",
  "tokio-stream",
+ "tracing",
  "url",
 ]
 
@@ -1184,7 +1195,19 @@ dependencies = [
  "cfg-if 1.0.0",
  "log",
  "pin-project-lite",
+ "tracing-attributes",
  "tracing-core",
+]
+
+[[package]]
+name = "tracing-attributes"
+version = "0.1.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e65ce065b4b5c53e73bb28912318cb8c9e9ad3921f1d669eb0e68b4c8143a2b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

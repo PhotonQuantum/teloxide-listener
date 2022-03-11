@@ -1,34 +1,27 @@
+//! Webhook update handler.
+
 use std::net::SocketAddr;
-use std::str::FromStr;
 
 use axum::http::StatusCode;
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use serde_json::Value;
 use teloxide::dispatching::stop_token::AsyncStopToken;
 use teloxide::dispatching::update_listeners::{StatefulListener, UpdateListener};
-use teloxide::prelude::*;
+use teloxide::requests::{Request, Requester};
 use teloxide::types::Update;
 use teloxide::RequestError;
 use tokio::sync::mpsc::unbounded_channel;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use url::Url;
 
+/// HTTP config for receiving updates via webhook.
 pub struct HTTPConfig {
+    /// Base URL for the callback.
     pub base_url: Url,
+    /// Path for the callback.
     pub path: String,
+    /// Address to listen for updates.
     pub addr: SocketAddr,
-}
-
-impl HTTPConfig {
-    #[must_use]
-    pub fn new(base_url: &str, path: &str, addr: &str) -> Self {
-        Self {
-            base_url: Url::parse(base_url).expect("invalid base url"),
-            path: path.to_string(),
-            addr: SocketAddr::from_str(addr).expect("invalid bind addr"),
-        }
-    }
 }
 
 impl HTTPConfig {
@@ -55,6 +48,7 @@ impl<S, T: Clone> State<S, T> {
 }
 
 #[allow(clippy::future_not_send)]
+#[doc(hidden)]
 pub async fn listener<R>(bot: R, config: HTTPConfig) -> impl UpdateListener<R::Err>
 where
     R: 'static + Requester<Err = RequestError>,
