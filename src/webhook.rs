@@ -53,6 +53,8 @@ pub async fn listener<R>(bot: R, config: HTTPConfig) -> impl UpdateListener<R::E
 where
     R: 'static + Requester<Err = RequestError>,
 {
+    tracing::info!("Starting webhook listener");
+
     bot.set_webhook(config.full_url())
         .send()
         .await
@@ -64,13 +66,17 @@ where
         .route(
             format!("/{}", config.path.trim_start_matches('/')).as_str(),
             post(move |Json(payload): Json<Update>| async move {
+                tracing::debug!("Received update: {:?}", payload);
                 tx.send(Ok(payload))
                     .expect("Cannot send an incoming update from the webhook");
 
                 StatusCode::OK
             }),
         )
-        .route("/health-check", get(|| async { StatusCode::OK }));
+        .route("/health-check", get(|| async {
+            tracing::debug!("Received health check request");
+            StatusCode::OK
+        }));
 
     let (stop_tx, stop_rx) = AsyncStopToken::new_pair();
 
@@ -79,6 +85,8 @@ where
         .with_graceful_shutdown(stop_rx);
 
     tokio::spawn(srv);
+
+    tracing::info!(%config.base_url, %config.path, %config.addr, "Webhook listening for updates");
 
     let stream = UnboundedReceiverStream::new(rx);
 
