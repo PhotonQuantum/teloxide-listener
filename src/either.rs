@@ -1,12 +1,9 @@
+use futures_core::Stream;
 use std::pin::Pin;
 use std::time::Duration;
-
-use futures_core::Stream;
 use teloxide::dispatching::stop_token::StopToken;
 use teloxide::dispatching::update_listeners::{AsUpdateStream, UpdateListener};
 use teloxide::types::{AllowedUpdate, Update};
-
-mod cast;
 
 pub enum Either<L, R> {
     Left(L),
@@ -37,20 +34,18 @@ where
     }
 }
 
-impl<L, R, E, StL, StR> UpdateListener<E> for Either<L, R>
+impl<L, R, E> UpdateListener<E> for Either<L, R>
 where
-    L: UpdateListener<E, StopToken = StL>,
-    R: UpdateListener<E, StopToken = StR>,
-    StL: 'static + StopToken,
-    StR: 'static + StopToken,
+    L: UpdateListener<E>,
+    R: UpdateListener<E>,
     Self: for<'a> AsUpdateStream<'a, E>,
 {
-    type StopToken = StL;
+    type StopToken = Either<L::StopToken, R::StopToken>;
 
     fn stop_token(&mut self) -> Self::StopToken {
         match self {
-            Either::Left(inner) => inner.stop_token(),
-            Either::Right(inner) => cast::assert_transmute(inner.stop_token()),
+            Either::Left(inner) => Either::Left(inner.stop_token()),
+            Either::Right(inner) => Either::Right(inner.stop_token()),
         }
     }
 
@@ -60,5 +55,11 @@ where
 
     fn timeout_hint(&self) -> Option<Duration> {
         either!(self, ref inner => inner.timeout_hint())
+    }
+}
+
+impl<L: StopToken, R: StopToken> StopToken for Either<L, R> {
+    fn stop(self) {
+        either!(self, inner => inner.stop());
     }
 }
